@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/yjcyxky/lakefs-vscode-extension"
   },
-  "icon": "icon.svg",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -22,7 +22,8 @@
     "file-explorer"
   ],
   "activationEvents": [
-    "onStartupFinished"
+    "onStartupFinished",
+    "onView:lakefs-panel"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -41,6 +42,12 @@
           "type": "boolean",
           "default": true,
           "description": "Enable/disable file decoration for ignored files"
+        },
+        "lakefs.lakectlPath": {
+          "type": "string",
+          "default": "",
+          "description": "Custom path to lakectl executable. If empty, will search in PATH environment variable.",
+          "scope": "machine-overridable"
         }
       }
     },
@@ -54,8 +61,54 @@
         "command": "lakefs.toggleDecoration",
         "title": "Toggle File Decoration",
         "category": "LakeFS"
+      },
+      {
+        "command": "lakefs.showStatus",
+        "title": "Show Status",
+        "category": "LakeFS",
+        "icon": "$(git-compare)"
+      },
+      {
+        "command": "lakefs.commit",
+        "title": "Commit Changes",
+        "category": "LakeFS",
+        "icon": "$(git-commit)"
+      },
+      {
+        "command": "lakefs.refresh",
+        "title": "Refresh",
+        "category": "LakeFS",
+        "icon": "$(refresh)"
       }
-    ]
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "lakefs-panel",
+          "name": "LakeFS",
+          "when": "workspaceFolderCount > 0"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "lakefs.refresh",
+          "when": "view == lakefs-panel",
+          "group": "navigation"
+        },
+        {
+          "command": "lakefs.showStatus",
+          "when": "view == lakefs-panel",
+          "group": "navigation"
+        },
+        {
+          "command": "lakefs.commit",
+          "when": "view == lakefs-panel",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
