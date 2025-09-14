@@ -134,7 +134,7 @@ export class LakectlService {
     async getStatus(): Promise<string> {
         try {
             const lakectlCmd = this.getLakectlCommand();
-            const result = await this.executeCommand(lakectlCmd, ['local', 'status']);
+            const result = await this.executeCommand(lakectlCmd, ['local', 'status', '--show-ignored']);
             return result.stdout;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';

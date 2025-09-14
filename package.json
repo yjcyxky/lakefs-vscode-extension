@@ -35,7 +35,10 @@
           "items": {
             "type": "string"
           },
-          "default": [".gitignore", ".lakefsignore"],
+          "default": [
+            ".gitignore",
+            ".lakefsignore"
+          ],
           "description": "List of ignore files to monitor (e.g., .gitignore, .customignore)"
         },
         "lakefs.enabled": {
@@ -79,6 +82,12 @@
         "title": "Refresh",
         "category": "LakeFS",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "lakefs.openWebUI",
+        "title": "Open Web UI",
+        "category": "LakeFS",
+        "icon": "$(globe)"
       }
     ],
     "views": {
@@ -106,6 +115,11 @@
           "command": "lakefs.commit",
           "when": "view == lakefs-panel",
           "group": "navigation"
+        },
+        {
+          "command": "lakefs.openWebUI",
+          "when": "view == lakefs-panel",
+          "group": "navigation"
         }
       ]
     }
@@ -121,6 +135,8 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
-    "ignore": "^5.3.0"
+    "@types/js-yaml": "^4.0.9",
+    "ignore": "^5.3.0",
+    "js-yaml": "^4.1.0"
   }
 }

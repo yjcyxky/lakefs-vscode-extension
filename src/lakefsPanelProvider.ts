@@ -1,14 +1,17 @@
 import * as vscode from 'vscode';
 import { LakectlService } from './lakectlService';
+import { LakeFSConfigService } from './lakeFSConfigService';
 
 export class LakeFSPanelProvider implements vscode.TreeDataProvider<LakeFSItem> {
     private _onDidChangeTreeData = new vscode.EventEmitter<LakeFSItem | undefined | null | void>();
     readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
     private lakectlService: LakectlService;
+    private configService: LakeFSConfigService;
 
     constructor() {
         console.log('LakeFSPanelProvider constructor called');
         this.lakectlService = LakectlService.getInstance();
+        this.configService = LakeFSConfigService.getInstance();
 
         // Listen for configuration changes
         vscode.workspace.onDidChangeConfiguration((e) => {
@@ -79,6 +82,9 @@ export class LakeFSPanelProvider implements vscode.TreeDataProvider<LakeFSItem> 
                     ));
                 }
             } else {
+                // Check if we can get repository info for web UI
+                const repoInfo = await this.configService.getRepositoryInfo();
+
                 items.push(
                     new LakeFSItem(
                         'Repository Status',
@@ -101,6 +107,27 @@ export class LakeFSPanelProvider implements vscode.TreeDataProvider<LakeFSItem> 
                         }
                     )
                 );
+
+                // Add Web UI button if repo info is available
+                if (repoInfo) {
+                    items.push(new LakeFSItem(
+                        'Open Web UI',
+                        `Open ${repoInfo.repoName} repository in web browser`,
+                        vscode.TreeItemCollapsibleState.None,
+                        {
+                            command: 'lakefs.openWebUI',
+                            title: 'Open Web UI',
+                            arguments: []
+                        }
+                    ));
+                } else {
+                    items.push(new LakeFSItem(
+                        '⚠️ Web UI unavailable',
+                        'Cannot find lakectl config or .lakefs_ref.yaml file',
+                        vscode.TreeItemCollapsibleState.None,
+                        undefined
+                    ));
+                }
             }
 
             console.log('Returning root items:', items.length);
@@ -127,7 +154,9 @@ export class LakeFSItem extends vscode.TreeItem {
             this.iconPath = new vscode.ThemeIcon('git-compare');
         } else if (label === 'Commit Changes') {
             this.iconPath = new vscode.ThemeIcon('git-commit');
-        } else if (label.includes('not found') || label.includes('invalid')) {
+        } else if (label === 'Open Web UI') {
+            this.iconPath = new vscode.ThemeIcon('globe');
+        } else if (label.includes('not found') || label.includes('invalid') || label.includes('unavailable')) {
             this.iconPath = new vscode.ThemeIcon('warning');
         } else if (label.includes('Configure custom path')) {
             this.iconPath = new vscode.ThemeIcon('gear');

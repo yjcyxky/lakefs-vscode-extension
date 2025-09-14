@@ -3,10 +3,12 @@ import { IgnoreFileDecorationProvider } from './ignoreFileDecorationProvider';
 import { LakeFSPanelProvider } from './lakefsPanelProvider';
 import { LakectlService } from './lakectlService';
 import { CommitDialog } from './commitDialog';
+import { LakeFSConfigService } from './lakeFSConfigService';
 
 let decorationProvider: IgnoreFileDecorationProvider | undefined;
 let lakefsPanelProvider: LakeFSPanelProvider | undefined;
 let lakectlService: LakectlService | undefined;
+let configService: LakeFSConfigService | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('LakeFS Extension is being activated');
@@ -15,6 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
     decorationProvider = new IgnoreFileDecorationProvider();
     lakefsPanelProvider = new LakeFSPanelProvider();
     lakectlService = LakectlService.getInstance();
+    configService = LakeFSConfigService.getInstance();
 
     console.log('LakeFS services initialized');
 
@@ -116,6 +119,42 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
     context.subscriptions.push(commitCommand);
+
+    const openWebUICommand = vscode.commands.registerCommand('lakefs.openWebUI', async () => {
+        console.log('openWebUI command executed');
+
+        try {
+            const repositoryUrl = await configService!.buildRepositoryUrl();
+
+            if (!repositoryUrl) {
+                vscode.window.showErrorMessage(
+                    'Cannot open Web UI: Missing lakectl configuration or .lakefs_ref.yaml file.\n\n' +
+                    'Please ensure:\n' +
+                    '1. ~/.lakectl.yaml exists with server endpoint\n' +
+                    '2. .lakefs_ref.yaml exists in workspace root with src field'
+                );
+                return;
+            }
+
+            // Open URL in default browser
+            const uri = vscode.Uri.parse(repositoryUrl);
+            await vscode.env.openExternal(uri);
+
+            // Show confirmation message
+            const repoInfo = await configService!.getRepositoryInfo();
+            if (repoInfo) {
+                vscode.window.showInformationMessage(
+                    `Opened ${repoInfo.repoName} repository in web browser`,
+                    { modal: false }
+                );
+            }
+        } catch (error) {
+            console.log('Error in openWebUI command:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            vscode.window.showErrorMessage(`Failed to open Web UI: ${errorMessage}`);
+        }
+    });
+    context.subscriptions.push(openWebUICommand);
 
     // Push all providers to subscriptions
     context.subscriptions.push(decorationProvider);
