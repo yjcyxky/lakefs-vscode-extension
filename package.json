@@ -1,0 +1,73 @@
+{
+  "name": "lakefs-vscode-extension",
+  "displayName": "LakeFS Extension",
+  "description": "VSCode extension for LakeFS to support git-like functionality.",
+  "version": "0.0.1",
+  "publisher": "yjcyxky",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yjcyxky/lakefs-vscode-extension"
+  },
+  "icon": "icon.svg",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "gitignore",
+    "file-decoration",
+    "ignore-files",
+    "file-explorer"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "LakeFS Extension",
+      "properties": {
+        "lakefs.ignoreFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [".gitignore", ".lakefsignore"],
+          "description": "List of ignore files to monitor (e.g., .gitignore, .customignore)"
+        },
+        "lakefs.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable file decoration for ignored files"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "lakefs.refreshIgnoreFiles",
+        "title": "Refresh Ignore Files",
+        "category": "LakeFS"
+      },
+      {
+        "command": "lakefs.toggleDecoration",
+        "title": "Toggle File Decoration",
+        "category": "LakeFS"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "18.x",
+    "@types/vscode": "^1.74.0",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "ignore": "^5.3.0"
+  }
+}

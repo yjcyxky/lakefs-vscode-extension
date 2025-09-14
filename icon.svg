@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lakeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A9EFF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2E86C1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1B4F72;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="branchGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#58D68D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#27AE60;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="url(#lakeGradient)" stroke="#1B4F72" stroke-width="2"/>
+
+  <!-- Lake/Data lake representation -->
+  <ellipse cx="64" cy="70" rx="45" ry="25" fill="#AED6F1" opacity="0.7"/>
+  <ellipse cx="64" cy="65" rx="40" ry="20" fill="#85C1E9" opacity="0.8"/>
+  <ellipse cx="64" cy="60" rx="35" ry="15" fill="#5DADE2" opacity="0.9"/>
+
+  <!-- Git branch representation -->
+  <g stroke="url(#branchGradient)" stroke-width="3" fill="none" stroke-linecap="round">
+    <!-- Main branch -->
+    <path d="M20 30 Q35 35, 50 30 T80 35"/>
+    <!-- Feature branch -->
+    <path d="M35 35 Q42 25, 50 20 Q58 15, 65 20 Q72 25, 80 20"/>
+    <!-- Merge point -->
+    <circle cx="80" cy="35" r="3" fill="url(#branchGradient)"/>
+    <circle cx="80" cy="20" r="3" fill="url(#branchGradient)"/>
+    <circle cx="35" cy="35" r="3" fill="url(#branchGradient)"/>
+    <circle cx="50" cy="20" r="3" fill="url(#branchGradient)"/>
+  </g>
+
+  <!-- File system representation -->
+  <g fill="#F8F9FA" opacity="0.9">
+    <!-- Folder icon -->
+    <rect x="85" y="85" width="16" height="12" rx="2" fill="#F39C12"/>
+    <rect x="87" y="83" width="6" height="2" rx="1" fill="#F39C12"/>
+
+    <!-- Files with fade effect (ignored files) -->
+    <rect x="105" y="87" width="12" height="15" rx="1" fill="#BDC3C7" opacity="0.6"/>
+    <rect x="105" y="105" width="12" height="15" rx="1" fill="#BDC3C7" opacity="0.4"/>
+    <line x1="107" y1="90" x2="115" y2="90" stroke="#85929E" stroke-width="1" opacity="0.6"/>
+    <line x1="107" y1="93" x2="113" y2="93" stroke="#85929E" stroke-width="1" opacity="0.6"/>
+    <line x1="107" y1="108" x2="115" y2="108" stroke="#85929E" stroke-width="1" opacity="0.4"/>
+    <line x1="107" y1="111" x2="113" y2="111" stroke="#85929E" stroke-width="1" opacity="0.4"/>
+  </g>
+
+  <!-- LakeFS text (subtle) -->
+  <text x="64" y="115" font-family="Arial, sans-serif" font-size="8" font-weight="bold"
+        text-anchor="middle" fill="#FFFFFF" opacity="0.8">LakeFS</text>
+</svg>
