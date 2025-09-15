@@ -15,6 +15,7 @@
 
 #### 当lakectl已安装时：
 - **Repository Status**: 查看仓库状态
+- **Checkout Branch**: 切换到不同的分支
 - **Commit Changes**: 提交更改
 - **Open Web UI**: 在浏览器中打开仓库的Web界面
 
@@ -24,7 +25,25 @@
 2. 在新文档窗口中显示状态结果
 3. 在"LakeFS"输出通道中记录执行日志
 
-### 3. 提交功能
+### 3. 分支切换功能
+点击"Checkout Branch"按钮会：
+
+1. **读取仓库信息**: 从 `.lakefs_ref.yaml` 文件获取当前仓库名称
+2. **获取分支列表**: 执行 `lakectl branch list lakefs://repo-name` 命令
+3. **显示分支选择**: 弹出下拉菜单显示所有可用分支
+   - 显示分支名称和简短的commit ID
+   - 当前分支会被预选中
+4. **确认切换**: 如果选择不同分支，会显示确认对话框
+5. **执行切换**: 执行 `lakectl local checkout . --ref lakefs://repo/branch` 命令
+6. **刷新界面**: 自动刷新文件资源管理器和LakeFS面板
+
+#### 分支选择界面特性
+- **智能提示**: 显示当前分支状态
+- **安全确认**: 切换分支前会询问确认
+- **详细信息**: 显示每个分支的commit ID
+- **取消操作**: 任何时候都可以取消操作
+
+### 4. 提交功能
 点击"Commit Changes"按钮会启动交互式提交流程：
 
 1. **输入提交消息**: 必填字段，不能为空
@@ -37,7 +56,7 @@
    lakectl local commit . -m "your message" --meta "key1=value1" --meta "key2=value2"
    ```
 
-### 4. Web UI功能
+### 5. Web UI功能
 点击"Open Web UI"按钮会：
 
 1. **读取配置**: 从以下位置查找lakectl配置
@@ -91,13 +110,16 @@ lakectl --version
 ### 方法2：通过命令面板
 按 `Cmd+Shift+P` (macOS) 或 `Ctrl+Shift+P` (Windows/Linux) 打开命令面板，然后输入：
 - `LakeFS: Show Status` - 查看状态
+- `LakeFS: Checkout Branch` - 切换分支
 - `LakeFS: Commit Changes` - 提交更改
+- `LakeFS: Open Web UI` - 打开Web界面
 - `LakeFS: Refresh` - 刷新面板
 
 ### 方法3：通过面板顶部按钮
-LakeFS面板顶部有四个按钮：
+LakeFS面板顶部有五个按钮：
 - 🔄 刷新
 - 📊 查看状态
+- 🌿 切换分支
 - 💾 提交更改
 - 🌐 打开Web UI
 
@@ -168,7 +190,19 @@ LakeFS面板顶部有四个按钮：
    - 如果配置正确，面板会显示"Open Web UI"按钮
    - 如果配置缺失，会显示"⚠️ Web UI unavailable"
 
-### 问题4：面板不显示
+### 问题4：分支切换功能不可用
+**解决方案**：
+1. **检查.lakefs_ref.yaml文件**：
+   - 确保工作区根目录有 `.lakefs_ref.yaml` 文件
+   - 验证文件包含有效的 `src` 字段
+2. **网络连接**：
+   - 确保能够连接到LakeFS服务器
+   - 检查lakectl配置是否正确
+3. **权限问题**：
+   - 确保有读取仓库分支的权限
+   - 验证lakectl凭证是否有效
+
+### 问题5：面板不显示
 **解决方案**：
 1. 确保打开了工作区文件夹
 2. 检查扩展是否已启用

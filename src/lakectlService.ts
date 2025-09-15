@@ -3,6 +3,11 @@ import * as cp from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
 
+export interface Branch {
+    name: string;
+    commitId: string;
+}
+
 export class LakectlService {
     private static instance: LakectlService;
     private outputChannel: vscode.OutputChannel;
@@ -157,6 +162,76 @@ export class LakectlService {
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             throw new Error(`Failed to commit: ${errorMessage}`);
+        }
+    }
+
+    async listBranches(repositoryUri: string): Promise<Branch[]> {
+        try {
+            const lakectlCmd = this.getLakectlCommand();
+            const result = await this.executeCommand(lakectlCmd, ['branch', 'list', repositoryUri]);
+
+            this.outputChannel.appendLine(`listBranches command: ${lakectlCmd} branch list ${repositoryUri}`);
+            this.outputChannel.appendLine(`listBranches result: ${result.stdout}`);
+
+            return this.parseBranchList(result.stdout);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            throw new Error(`Failed to list branches: ${errorMessage}`);
+        }
+    }
+
+    private parseBranchList(output: string): Branch[] {
+        const branches: Branch[] = [];
+        const lines = output.split('\n');
+
+        this.outputChannel.appendLine(`Raw output lines: ${lines.length}`);
+
+        for (const line of lines) {
+            const trimmedLine = line.trim();
+
+            // Skip empty lines
+            if (trimmedLine === '') {
+                continue;
+            }
+
+            this.outputChannel.appendLine(`Processing line: "${trimmedLine}"`);
+
+            // Parse tab-separated or space-separated format: BRANCH_NAME    COMMIT_ID
+            // Split by multiple whitespace characters (tabs or multiple spaces)
+            const parts = trimmedLine.split(/\s+/);
+
+            if (parts.length >= 2) {
+                const branchName = parts[0];
+                const commitId = parts[1];
+
+                if (branchName && commitId) {
+                    branches.push({
+                        name: branchName,
+                        commitId: commitId
+                    });
+                    this.outputChannel.appendLine(`Added branch: ${branchName} -> ${commitId.substring(0, 8)}...`);
+                }
+            } else {
+                this.outputChannel.appendLine(`Skipping invalid line with ${parts.length} parts: "${trimmedLine}"`);
+            }
+        }
+
+        this.outputChannel.appendLine(`Parsed ${branches.length} branches: ${branches.map(b => b.name).join(', ')}`);
+        console.log('parsed branches:', branches);
+
+        return branches;
+    }
+
+    async checkout(repositoryUri: string, branch: string): Promise<string> {
+        try {
+            const lakectlCmd = this.getLakectlCommand();
+            const checkoutRef = `${repositoryUri.replace(/\/$/, '')}/${branch}`;
+            const result = await this.executeCommand(lakectlCmd, ['local', 'checkout', '.', '--ref', checkoutRef]);
+
+            return result.stdout;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            throw new Error(`Failed to checkout: ${errorMessage}`);
         }
     }
 

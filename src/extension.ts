@@ -4,6 +4,7 @@ import { LakeFSPanelProvider } from './lakefsPanelProvider';
 import { LakectlService } from './lakectlService';
 import { CommitDialog } from './commitDialog';
 import { LakeFSConfigService } from './lakeFSConfigService';
+import { BranchCheckoutDialog } from './branchCheckoutDialog';
 
 let decorationProvider: IgnoreFileDecorationProvider | undefined;
 let lakefsPanelProvider: LakeFSPanelProvider | undefined;
@@ -155,6 +156,45 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
     context.subscriptions.push(openWebUICommand);
+
+    const checkoutCommand = vscode.commands.registerCommand('lakefs.checkout', async () => {
+        console.log('checkout command executed');
+
+        try {
+            const checkoutData = await BranchCheckoutDialog.show();
+
+            if (!checkoutData) {
+                return; // User cancelled
+            }
+
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: `Checking out branch "${checkoutData.branch}"...`,
+                cancellable: false
+            }, async () => {
+                const result = await lakectlService!.checkout(checkoutData.repositoryUri, checkoutData.branch);
+
+                vscode.window.showInformationMessage(
+                    `Successfully checked out branch "${checkoutData.branch}"`,
+                    'Show Output'
+                ).then(selection => {
+                    if (selection === 'Show Output') {
+                        lakectlService!.showOutput();
+                    }
+                });
+
+                // Refresh the panel and file explorer
+                lakefsPanelProvider?.refresh();
+                vscode.commands.executeCommand('workbench.files.action.refreshFilesExplorer');
+            });
+        } catch (error) {
+            console.log('Error in checkout command:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            vscode.window.showErrorMessage(`Checkout failed: ${errorMessage}`);
+            lakectlService!.showOutput();
+        }
+    });
+    context.subscriptions.push(checkoutCommand);
 
     // Push all providers to subscriptions
     context.subscriptions.push(decorationProvider);

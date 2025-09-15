@@ -1,7 +1,7 @@
 {
   "name": "lakefs-vscode-extension",
   "displayName": "LakeFS Extension",
-  "description": "VSCode extension for LakeFS to support git-like functionality.",
+  "description": "Comprehensive LakeFS integration for VSCode with branch switching, commits, status monitoring, and web UI access.",
   "version": "0.0.1",
   "publisher": "yjcyxky",
   "repository": {
@@ -16,10 +16,16 @@
     "Other"
   ],
   "keywords": [
-    "gitignore",
+    "lakefs",
+    "data-versioning",
+    "branch-management",
+    "git-like",
+    "data-lakes",
+    "version-control",
     "file-decoration",
-    "ignore-files",
-    "file-explorer"
+    "lakectl",
+    "commit",
+    "checkout"
   ],
   "activationEvents": [
     "onStartupFinished",
@@ -88,6 +94,12 @@
         "title": "Open Web UI",
         "category": "LakeFS",
         "icon": "$(globe)"
+      },
+      {
+        "command": "lakefs.checkout",
+        "title": "Checkout Branch",
+        "category": "LakeFS",
+        "icon": "$(git-branch)"
       }
     ],
     "views": {
@@ -118,6 +130,11 @@
         },
         {
           "command": "lakefs.openWebUI",
+          "when": "view == lakefs-panel",
+          "group": "navigation"
+        },
+        {
+          "command": "lakefs.checkout",
           "when": "view == lakefs-panel",
           "group": "navigation"
         }

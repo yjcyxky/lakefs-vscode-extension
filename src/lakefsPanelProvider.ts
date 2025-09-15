@@ -97,6 +97,16 @@ export class LakeFSPanelProvider implements vscode.TreeDataProvider<LakeFSItem> 
                         }
                     ),
                     new LakeFSItem(
+                        'Checkout Branch',
+                        'Switch to a different branch',
+                        vscode.TreeItemCollapsibleState.None,
+                        {
+                            command: 'lakefs.checkout',
+                            title: 'Checkout Branch',
+                            arguments: []
+                        }
+                    ),
+                    new LakeFSItem(
                         'Commit Changes',
                         'Click to commit changes to LakeFS',
                         vscode.TreeItemCollapsibleState.None,
@@ -152,6 +162,8 @@ export class LakeFSItem extends vscode.TreeItem {
         // Set appropriate icons
         if (label === 'Repository Status') {
             this.iconPath = new vscode.ThemeIcon('git-compare');
+        } else if (label === 'Checkout Branch') {
+            this.iconPath = new vscode.ThemeIcon('git-branch');
         } else if (label === 'Commit Changes') {
             this.iconPath = new vscode.ThemeIcon('git-commit');
         } else if (label === 'Open Web UI') {
